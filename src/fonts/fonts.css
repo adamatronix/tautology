@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style:  normal;
+  font-variation-settings: "wght" 450;
+  font-display: swap;
+  src: url("./NeueMontreal/PPNeueMontreal-Variable.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Neue Montreal';
+  font-style:  italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./NeueMontreal/neuemontreal-regularitalic-webfont.woff2") format("woff2"),
+      url("./NeueMontreal/neuemontreal-regularitalic-webfont.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style:  normal;
+  font-variation-settings: "wght" 100;
+  font-display: swap;
+  src: url("./Inter/Inter-Thin.woff2") format("woff2"),
+      url("./Inter/Inter-Thin.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Italian Garamond';
+  font-style:  italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./ItalianGaramond/ItalianGaramondBT-Italic.woff2") format("woff2"),
+      url("./ItalianGaramond/ItalianGaramondBT-Italic.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Italian Garamond';
+  font-style:  normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./ItalianGaramond/ItalianGaramondBT-Roman.woff2") format("woff2"),
+      url("./ItalianGaramond/ItalianGaramondBT-Roman.woff") format("woff");
+}
