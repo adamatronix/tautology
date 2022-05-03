@@ -32,13 +32,24 @@ const Wavves = ({children, trigger, ...props}: WavvesProps) => {
 
   useEffect(() => {
     if(trigger && loaded) {
-      setupStagger();
+      inAnimation();
+    } else if(!trigger && loaded) {
+      outAnimation();
     }
   }, [trigger, loaded]);
 
-  const setupStagger = () => {
+  const inAnimation = () => {
     gsap.to(charCache.current, {
       y: '0%',
+      stagger: {
+        each: 0.04
+      }
+    })
+  }
+
+  const outAnimation = () => {
+    gsap.to(charCache.current, {
+      y: '100%',
       stagger: {
         each: 0.04
       }
