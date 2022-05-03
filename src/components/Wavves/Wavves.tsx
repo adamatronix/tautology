@@ -1,6 +1,7 @@
 import gsap from 'gsap';
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
+import animationTypes from '../../utils/animationTypes';
 
 const Wrapper = styled.div`
   position: relative;
@@ -17,6 +18,8 @@ const CharWrapper = styled.span`
 interface WavvesProps {
 
   trigger?: boolean;
+  inAnim?: 'normal';
+  outAnim?: 'normal';
   /**
    * Is this the principal call to action on the page?
    */
@@ -25,8 +28,13 @@ interface WavvesProps {
 
 }
 
-const Wavves = ({children, trigger, ...props}: WavvesProps) => {
-  const charCache = useRef<(HTMLDivElement | null)[]>([]);
+const Wavves = ({
+  inAnim = 'normal',
+  outAnim = 'normal',
+  children, 
+  trigger, 
+  ...props}: WavvesProps) => {
+  const charCache = useRef<HTMLDivElement[]>([]);
   const [loaded, setIsLoaded ] = useState(false);
   const characterTotal = children ? children.split('').filter((val)=> val !== ' ').length : 0;
 
@@ -39,21 +47,11 @@ const Wavves = ({children, trigger, ...props}: WavvesProps) => {
   }, [trigger, loaded]);
 
   const inAnimation = () => {
-    gsap.to(charCache.current, {
-      y: '0%',
-      stagger: {
-        each: 0.04
-      }
-    })
+    animationTypes(`${inAnim}In`, charCache.current)();
   }
 
   const outAnimation = () => {
-    gsap.to(charCache.current, {
-      y: '100%',
-      stagger: {
-        each: 0.04
-      }
-    })
+    animationTypes(`${outAnim}Out`, charCache.current)();
   }
 
   const useChar = (index:number) => {
