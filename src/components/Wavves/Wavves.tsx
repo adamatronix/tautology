@@ -15,16 +15,26 @@ const CharWrapper = styled.span`
 `
 
 interface WavvesProps {
+
+  trigger?: boolean;
   /**
    * Is this the principal call to action on the page?
    */
   children: string;
+
+
 }
 
-const Wavves = ({children, ...props}: WavvesProps) => {
+const Wavves = ({children, trigger, ...props}: WavvesProps) => {
   const charCache = useRef<(HTMLDivElement | null)[]>([]);
+  const [loaded, setIsLoaded ] = useState(false);
   const characterTotal = children ? children.split('').filter((val)=> val !== ' ').length : 0;
 
+  useEffect(() => {
+    if(trigger && loaded) {
+      setupStagger();
+    }
+  }, [trigger, loaded]);
 
   const setupStagger = () => {
     gsap.to(charCache.current, {
@@ -40,9 +50,8 @@ const Wavves = ({children, ...props}: WavvesProps) => {
       (node:HTMLDivElement) => {
         if(node !== null) {
           charCache.current[index] = node;
-
           if(charCache.current.length === characterTotal) {
-            setupStagger();
+            setIsLoaded(true);
           }
         }
       },
