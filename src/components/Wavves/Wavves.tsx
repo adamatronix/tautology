@@ -6,20 +6,28 @@ import animationTypes from '../../utils/animationTypes';
 const Wrapper = styled.div`
   position: relative;
   overflow: hidden;
+  perspective: 2000;
 `
 
-const CharWrapper = styled.span`
+const CharWrapper = styled.span<{ type: string }>`
   position: relative;
   display: inline-block;
-  transform:  translate(0,100%);
+  
+  ${({type}) => type === 'normal' && `
+    transform:  translate(0,100%);
+  `}
 
+  ${({type}) => type === 'fold' && `
+    transform:  translate(0,50%) rotateX(-90deg);
+    transform-origin: 50% 100%;
+  `}
 `
 
 interface WavvesProps {
 
   trigger?: boolean;
-  inAnim?: 'normal';
-  outAnim?: 'normal';
+  inAnim?: 'normal' | 'fold';
+  outAnim?: 'normal' | 'fold';
   /**
    * Is this the principal call to action on the page?
    */
@@ -34,16 +42,24 @@ const Wavves = ({
   children, 
   trigger, 
   ...props}: WavvesProps) => {
+  const firstLoad = useRef(false);
   const charCache = useRef<HTMLDivElement[]>([]);
   const [loaded, setIsLoaded ] = useState(false);
   const characterTotal = children ? children.split('').filter((val)=> val !== ' ').length : 0;
 
   useEffect(() => {
-    if(trigger && loaded) {
-      inAnimation();
-    } else if(!trigger && loaded) {
-      outAnimation();
+
+    if(loaded && firstLoad.current) {
+      if(trigger) {
+        inAnimation();
+      } else if(!trigger) {
+        outAnimation();
+      }
+    } else if(loaded) {
+      firstLoad.current = true;
+      animationTypes(`${inAnim}State`, charCache.current)();
     }
+    
   }, [trigger, loaded]);
 
   const inAnimation = () => {
@@ -51,7 +67,7 @@ const Wavves = ({
   }
 
   const outAnimation = () => {
-    animationTypes(`${outAnim}Out`, charCache.current)();
+    animationTypes(`${outAnim}Out`, charCache.current, animationTypes(`${inAnim}State`, charCache.current))();
   }
 
   const useChar = (index:number) => {
@@ -76,7 +92,7 @@ const Wavves = ({
       const isSpace = char === ' ';
       const [ reference ] = useChar(countIndex);
       countIndex = !isSpace ? countIndex + 1 : countIndex;
-      return !isSpace ? (<CharWrapper ref={reference}>{char}</CharWrapper>) : (<> </>);
+      return !isSpace ? (<CharWrapper ref={reference} type={inAnim}>{char}</CharWrapper>) : (<> </>);
     }) : false;
   }
 

@@ -30,3 +30,11 @@ export const Primary = Template.bind({});
 Primary.args = {
   children: 'Get In Touch'
 };
+
+export const Fold = Template.bind({});
+// More on args: https://storybook.js.org/docs/react/writing-stories/args
+Fold.args = {
+  children: 'Get In Touch',
+  inAnim: 'fold',
+  outAnim: 'normal'
+};
