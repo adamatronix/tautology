@@ -1,22 +1,33 @@
 import gsap from 'gsap';
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
+import animationTypes from '../../utils/animationTypes';
 
 const Wrapper = styled.div`
   position: relative;
   overflow: hidden;
+  perspective: 2000;
 `
 
-const CharWrapper = styled.span`
+const CharWrapper = styled.span<{ type: string }>`
   position: relative;
   display: inline-block;
-  transform:  translate(0,100%);
+  
+  ${({type}) => type === 'normal' && `
+    transform:  translate(0,100%);
+  `}
 
+  ${({type}) => type === 'fold' && `
+    transform:  translate(0,50%) rotateX(-90deg);
+    transform-origin: 50% 100%;
+  `}
 `
 
 interface WavvesProps {
 
   trigger?: boolean;
+  inAnim?: 'normal' | 'fold';
+  outAnim?: 'normal' | 'fold';
   /**
    * Is this the principal call to action on the page?
    */
@@ -25,24 +36,38 @@ interface WavvesProps {
 
 }
 
-const Wavves = ({children, trigger, ...props}: WavvesProps) => {
-  const charCache = useRef<(HTMLDivElement | null)[]>([]);
+const Wavves = ({
+  inAnim = 'normal',
+  outAnim = 'normal',
+  children, 
+  trigger, 
+  ...props}: WavvesProps) => {
+  const firstLoad = useRef(false);
+  const charCache = useRef<HTMLDivElement[]>([]);
   const [loaded, setIsLoaded ] = useState(false);
   const characterTotal = children ? children.split('').filter((val)=> val !== ' ').length : 0;
 
   useEffect(() => {
-    if(trigger && loaded) {
-      setupStagger();
+
+    if(loaded && firstLoad.current) {
+      if(trigger) {
+        inAnimation();
+      } else if(!trigger) {
+        outAnimation();
+      }
+    } else if(loaded) {
+      firstLoad.current = true;
+      animationTypes(`${inAnim}State`, charCache.current)();
     }
+    
   }, [trigger, loaded]);
 
-  const setupStagger = () => {
-    gsap.to(charCache.current, {
-      y: '0%',
-      stagger: {
-        each: 0.04
-      }
-    })
+  const inAnimation = () => {
+    animationTypes(`${inAnim}In`, charCache.current)();
+  }
+
+  const outAnimation = () => {
+    animationTypes(`${outAnim}Out`, charCache.current, animationTypes(`${inAnim}State`, charCache.current))();
   }
 
   const useChar = (index:number) => {
@@ -67,7 +92,7 @@ const Wavves = ({children, trigger, ...props}: WavvesProps) => {
       const isSpace = char === ' ';
       const [ reference ] = useChar(countIndex);
       countIndex = !isSpace ? countIndex + 1 : countIndex;
-      return !isSpace ? (<CharWrapper ref={reference}>{char}</CharWrapper>) : (<> </>);
+      return !isSpace ? (<CharWrapper ref={reference} type={inAnim}>{char}</CharWrapper>) : (<> </>);
     }) : false;
   }
 
